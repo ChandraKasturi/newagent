@@ -97,6 +97,7 @@ const YouTranscribe = () => {
               
               <div className="flex justify-center">
                 <button
+                  type="button"
                   onClick={handleTranscribe}
                   disabled={isLoading}
                   className="inline-flex items-center rounded-md bg-green-600 px-6 py-3 text-base font-medium text-white hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"

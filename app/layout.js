@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/Navbar";
+import HeroSection from "./components/Heros";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
           className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
         >
           <Navbar />
+          <HeroSection />
           <main>
             {children}
           </main>

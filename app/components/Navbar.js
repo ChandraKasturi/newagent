@@ -36,7 +36,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-md h-16 fixed top-0 left-0 right-0 z-50">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu button */}
@@ -78,11 +78,9 @@ const Navbar = () => {
           {/* Logo section */}
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              <img 
-                className="h-8 w-auto" 
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500" 
-                alt="Your Company" 
-              />
+              <Link href="/" className="text-2xl font-bold text-indigo-600 hover:text-indigo-500 transition-colors">
+                AgentGenix
+              </Link>
             </div>
           </div>
 
