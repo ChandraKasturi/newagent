@@ -1,24 +1,49 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from "@clerk/nextjs";
 import Link from 'next/link';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isAgentsOpen, setIsAgentsOpen] = useState(false)
+  const dropdownRef = useRef(null)
+  const buttonRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsAgentsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleMobileMenuToggle = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
+  const handleAgentsToggle = () => {
+    setIsAgentsOpen(!isAgentsOpen)
+  }
+
   return (
-    <nav className="bg-gray-800">
+    <nav className="bg-white shadow-md">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu button */}
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
               type="button"
-              className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
               aria-controls="mobile-menu"
               aria-expanded={isMobileMenuOpen}
               onClick={handleMobileMenuToggle}
@@ -50,7 +75,7 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Logo and Desktop Navigation */}
+          {/* Logo section */}
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
               <img 
@@ -59,28 +84,76 @@ const Navbar = () => {
                 alt="Your Company" 
               />
             </div>
-            <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4">
-                <a href="#" className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>
-                <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
-                <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
-                <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
-              </div>
-            </div>
           </div>
 
-          {/* Auth Buttons */}
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <div className="flex space-x-4">
+          {/* Navigation and Auth Buttons */}
+          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+            {/* Agents Dropdown */}
+            <div className="relative">
+              <button
+                ref={buttonRef}
+                type="button"
+                className="group rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 inline-flex items-center"
+                onClick={handleAgentsToggle}
+                aria-expanded={isAgentsOpen}
+              >
+                <span>Agents</span>
+                <svg 
+                  className={`ml-2 h-4 w-4 transition-transform duration-200 ${isAgentsOpen ? 'rotate-180' : ''}`}
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  strokeWidth="1.5" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </button>
+
+              {/* Dropdown menu */}
+              {isAgentsOpen && (
+                <div 
+                  ref={dropdownRef}
+                  className="absolute left-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                >
+                  <Link
+                    href="/you-transcribe"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    You Transcribe
+                  </Link>
+                  <Link
+                    href="/resume-ace"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    Resume Ace
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <Link 
+              href="/services" 
+              className="rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            >
+              Services
+            </Link>
+            <Link 
+              href="/about" 
+              className="rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            >
+              About
+            </Link>
+            
+            <div className="flex space-x-4 ml-4">
               <Link 
                 href="/sign-in"
-                className="rounded-md bg-gray-700 px-3 py-2 text-sm font-medium text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 Sign in
               </Link>
               <Link 
                 href="/sign-up"
-                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 Sign up
               </Link>
@@ -93,14 +166,48 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="sm:hidden" id="mobile-menu">
           <div className="space-y-1 px-2 pb-3 pt-2">
-            <a href="#" className="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white" aria-current="page">Dashboard</a>
-            <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
-            <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
-            <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
+            {/* Agents section in mobile */}
+            <button
+              type="button"
+              className="w-full text-left rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              onClick={handleAgentsToggle}
+            >
+              Agents
+            </button>
+            {isAgentsOpen && (
+              <div className="pl-4">
+                <Link
+                  href="/you-transcribe"
+                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                >
+                  You Transcribe
+                </Link>
+                <Link
+                  href="/resume-ace"
+                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                >
+                  Resume Ace
+                </Link>
+              </div>
+            )}
+            
+            <Link 
+              href="/services" 
+              className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            >
+              Services
+            </Link>
+            <Link 
+              href="/about" 
+              className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            >
+              About
+            </Link>
+            
             <div className="mt-4 flex flex-col space-y-2 px-3">
               <Link 
                 href="/sign-in"
-                className="rounded-md bg-gray-700 px-3 py-2 text-base font-medium text-white hover:bg-gray-600 text-center"
+                className="rounded-md bg-gray-100 px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 text-center"
               >
                 Sign in
               </Link>
