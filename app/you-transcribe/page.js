@@ -1,10 +1,14 @@
 'use client'
 import React, { useState } from 'react'
+import { YoutubeTranscript } from 'youtube-transcript'
 
 const YouTranscribe = () => {
   const [url, setUrl] = useState('')
   const [videoId, setVideoId] = useState('')
   const [showPreview, setShowPreview] = useState(false)
+  const [transcript, setTranscript] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const extractVideoId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
@@ -18,20 +22,35 @@ const YouTranscribe = () => {
     if (extractedVideoId) {
       setVideoId(extractedVideoId)
       setShowPreview(true)
+      setTranscript('')
+      setError('')
     } else {
       alert('Please enter a valid YouTube URL')
     }
   }
 
-  const handleTranscribe = () => {
-    // Handle transcription logic here
-    console.log('Transcribing video:', videoId)
+  const handleTranscribe = async () => {
+    console.log("UGUGUGUGGUGUUGGUGUGU")
+    setIsLoading(true)
+    setError('')
+    try {
+      const transcriptArray = await YoutubeTranscript.fetchTranscript(videoId)
+      console.log(transcriptArray);
+      const formattedTranscript = transcriptArray
+        .map(item => item.text)
+        .join(' ')
+      setTranscript(formattedTranscript)
+    } catch (err) {
+      setError('Failed to fetch transcript. Please make sure the video has captions available.')
+      console.error('Transcription error:', err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="container mx-auto px-4 mt-[10vh]">
       <div className="max-w-3xl mx-auto">
-        {/* Form Container - This width will be referenced for preview */}
         <div className="w-full">
           {/* URL Input Section */}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,7 +82,7 @@ const YouTranscribe = () => {
             </div>
           </form>
 
-          {/* Video Preview Section - Same width as form above */}
+          {/* Video Preview Section */}
           {showPreview && (
             <div className="mt-8 space-y-6">
               <div className="relative w-full pt-[56.25%]">
@@ -79,11 +98,36 @@ const YouTranscribe = () => {
               <div className="flex justify-center">
                 <button
                   onClick={handleTranscribe}
-                  className="inline-flex items-center rounded-md bg-green-600 px-6 py-3 text-base font-medium text-white hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  disabled={isLoading}
+                  className="inline-flex items-center rounded-md bg-green-600 px-6 py-3 text-base font-medium text-white hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  Transcribe Video
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Transcribing...
+                    </>
+                  ) : 'Transcribe Video'}
                 </button>
               </div>
+
+              {/* Transcript Section */}
+              {error && (
+                <div className="p-4 rounded-md bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
+              
+              {transcript && (
+                <div className="p-4 rounded-md border border-gray-200 bg-gray-50">
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Transcript</h3>
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-gray-700 whitespace-pre-wrap">{transcript}</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
