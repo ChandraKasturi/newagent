@@ -1,13 +1,24 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react'
-
-import Link from 'next/link';
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import useUserStore from '../store/userStore'
+import useTokenStore from '../store/tokenStore'
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isAgentsOpen, setIsAgentsOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const router = useRouter()
+  const clearUser = useUserStore((state) => state.clearUser)
+  const clearSessionId = useTokenStore((state) => state.clearSessionId)
   const dropdownRef = useRef(null)
   const buttonRef = useRef(null)
+
+  useEffect(() => {
+    const loginStatus = localStorage.getItem('isLoggedIn') === 'true'
+    setIsLoggedIn(loginStatus)
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -33,6 +44,38 @@ const Navbar = () => {
 
   const handleAgentsToggle = () => {
     setIsAgentsOpen(!isAgentsOpen)
+  }
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      if (response.ok) {
+        // Clear local storage
+        localStorage.removeItem('isLoggedIn')
+        localStorage.removeItem('userEmail')
+        localStorage.removeItem('sessionId')
+        // Clear Zustand stores
+        clearUser()
+        clearSessionId()
+        
+        // Update local state
+        setIsLoggedIn(false)
+        
+        // Redirect to home page
+        router.push('/')
+      } else {
+        console.error('Logout failed')
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
   }
 
   return (
@@ -143,18 +186,29 @@ const Navbar = () => {
             </Link>
             
             <div className="flex space-x-4 ml-4">
-              <Link 
-                href="/sign-in"
-                className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Sign in
-              </Link>
-              <Link 
-                href="/sign-up"
-                className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Sign up
-              </Link>
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link 
+                    href="/sign-in"
+                    className="rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Sign in
+                  </Link>
+                  <Link 
+                    href="/sign-up"
+                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -203,18 +257,29 @@ const Navbar = () => {
             </Link>
             
             <div className="mt-4 flex flex-col space-y-2 px-3">
-              <Link 
-                href="/sign-in"
-                className="rounded-md bg-gray-100 px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 text-center"
-              >
-                Sign in
-              </Link>
-              <Link 
-                href="/sign-up"
-                className="rounded-md bg-indigo-600 px-3 py-2 text-base font-medium text-white hover:bg-indigo-500 text-center"
-              >
-                Sign up
-              </Link>
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="rounded-md bg-gray-100 px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 text-center"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link 
+                    href="/sign-in"
+                    className="rounded-md bg-gray-100 px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 text-center"
+                  >
+                    Sign in
+                  </Link>
+                  <Link 
+                    href="/sign-up"
+                    className="rounded-md bg-indigo-600 px-3 py-2 text-base font-medium text-white hover:bg-indigo-500 text-center"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

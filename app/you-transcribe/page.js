@@ -1,8 +1,13 @@
 'use client'
 import React, { useState } from 'react'
-import { YoutubeTranscript } from 'youtube-transcript'
+import { useRouter } from 'next/navigation'
+import { fetchWithSession } from '../utils/api'
+import useTokenStore from '../store/tokenStore'
+
+
 
 const YouTranscribe = () => {
+  const router = useRouter()
   const [url, setUrl] = useState('')
   const [videoId, setVideoId] = useState('')
   const [showPreview, setShowPreview] = useState(false)
@@ -10,11 +15,21 @@ const YouTranscribe = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+
+
   const extractVideoId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
     const match = url.match(regExp)
     return match && match[2].length === 11 ? match[2] : null
   }
+
+  // Check if user is logged in
+  React.useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn')
+    if (!isLoggedIn) {
+      router.push('/sign-in')
+    }
+  }, [router])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -25,23 +40,37 @@ const YouTranscribe = () => {
       setTranscript('')
       setError('')
     } else {
-      alert('Please enter a valid YouTube URL')
+      setError('Please enter a valid YouTube URL')
     }
   }
 
   const handleTranscribe = async () => {
-    console.log("UGUGUGUGGUGUUGGUGUGU")
     setIsLoading(true)
     setError('')
     try {
-      const transcriptArray = await YoutubeTranscript.fetchTranscript(videoId)
-      console.log(transcriptArray);
-      const formattedTranscript = transcriptArray
-        .map(item => item.text)
-        .join(' ')
-      setTranscript(formattedTranscript)
+      const response = await fetchWithSession(`${process.env.NEXT_PUBLIC_SERVER_URL}/you-transcribe`, {
+        method: 'POST',
+        //headers to include the session id  as x-session-id 
+        
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-id': localStorage.getItem('sessionId')
+        },
+        body: JSON.stringify({
+          videourl: url // Send the full video URL
+        })
+      })
+
+      const data = await response.json()
+      console.log('Server Response:', data) // Log the server response
+
+      if (response.ok && data.status === 'success') {
+        setTranscript(data.text || '') // Assuming the response has a 'text' field with the transcript
+      } else {
+        throw new Error(data.message || 'Failed to get transcript')
+      }
     } catch (err) {
-      setError('Failed to fetch transcript. Please make sure the video has captions available.')
+      setError(err.message || 'Failed to get transcript')
       console.error('Transcription error:', err)
     } finally {
       setIsLoading(false)
@@ -114,13 +143,14 @@ const YouTranscribe = () => {
                 </button>
               </div>
 
-              {/* Transcript Section */}
+              {/* Error Message */}
               {error && (
                 <div className="p-4 rounded-md bg-red-50 border border-red-200">
                   <p className="text-sm text-red-600">{error}</p>
                 </div>
               )}
               
+              {/* Transcript Display */}
               {transcript && (
                 <div className="p-4 rounded-md border border-gray-200 bg-gray-50">
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Transcript</h3>

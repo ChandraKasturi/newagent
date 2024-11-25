@@ -19,3 +19,9 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer utilities {
+  .hover-scale {
+    @apply transform transition-all duration-300 hover:scale-105;
+  }
+}

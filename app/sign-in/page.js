@@ -1,8 +1,32 @@
 'use client'
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import useUserStore from '../store/userStore'
+
+
+export const fetchWithSession = async (url, options = {}) => {
+  
+ 
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(sessionId && { 'x-session-id': sessionId }),
+    ...options.headers,
+  }
+
+  return fetch(url, {
+    ...options,
+    credentials: 'include',
+    headers,
+  })
+}
 
 const SignIn = () => {
+  const router = useRouter()
+  const setUser = useUserStore((state) => state.setUser)
+ 
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     email: '',
@@ -27,19 +51,108 @@ const SignIn = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (validateForm()) {
-      setStep(2)
-      setIsEditing(false)
+      setIsLoading(true)
+      try {
+        //console log the text I am trying to send
+        console.log('I am trying to send:', formData.email)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/signin`, {
+         
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email
+          })
+        })
+
+        const data = await response.json()
+        
+        if (response.ok && data.status === 'success') {
+          setStep(2)
+          setIsEditing(false)
+        } else {
+          throw new Error(data.message || 'Failed to send verification code')
+        }
+      } catch (err) {
+        setErrors({ email: err.message || 'Failed to send verification code' })
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault()
     if (formData.verificationCode.length === 6) {
-      // Handle sign in logic here
-      console.log('Sign in data:', formData)
+      setIsLoading(true)
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/signin/verify`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            otp: formData.verificationCode
+          })
+        })
+
+        // Debug: Log all headers
+        console.log('All response headers:')
+        response.headers.forEach((value, key) => {
+          console.log(`${key}: ${value}`)
+        })
+
+        // read the response headers and get the x-session-id and store it in local storage as sessionId 
+        const sessionId = response.headers.get('x-session-id')
+        if (sessionId) {
+          localStorage.setItem('sessionId', sessionId)
+        }
+
+        // Try different case variations
+        
+
+        console.log('Found session ID:', sessionId)
+
+        if (sessionId) {
+          
+          console.log('Session ID found in response headers', localStorage.getItem('sessionId'))
+        } else {
+          console.warn('No session ID found in response headers')
+        }
+
+        const data = await response.json()
+        
+        if (response.ok && data.status === 'success') {
+          // Store user data in Zustand
+          const userData = {
+            email: formData.email,
+            ...data.user
+          }
+          setUser(userData)
+          
+          // Set local storage
+          localStorage.setItem('isLoggedIn', 'true')
+          localStorage.setItem('userEmail', formData.email)
+          
+          // Navigate to dashboard
+          router.push('/dashboard')
+        } else {
+          throw new Error(data.message || 'Invalid verification code')
+        }
+      } catch (err) {
+        setErrors({ 
+          verificationCode: err.message || 'Verification failed' 
+        })
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -71,7 +184,7 @@ const SignIn = () => {
 
         <div className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm space-y-4">
-            <div className="relative">
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
@@ -97,7 +210,6 @@ const SignIn = () => {
                     type="button"
                     onClick={handleEdit}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
-                    aria-label="Edit email"
                   >
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 

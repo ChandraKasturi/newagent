@@ -1,8 +1,13 @@
 'use client'
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import useUserStore from '../store/userStore'
 
 const SignUp = () => {
+  const router = useRouter()
+  const setUser = useUserStore((state) => state.setUser)
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     email: '',
@@ -37,19 +42,103 @@ const SignUp = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (validateForm()) {
-      setStep(2)
-      setIsEditing(false)
+      setIsLoading(true)
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/signup`, {
+          method: 'POST',
+          credentials: 'include', // Important for cookie handling
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            firstname: formData.firstName,
+            lastname: formData.lastName,
+            active: 'Y',
+            otp: '',
+            credits: '10'
+          })
+        })
+
+        const data = await response.json()
+        
+        if (response.ok && data.status === 'success') {
+          setStep(2)
+          setIsEditing(false)
+        } else {
+          throw new Error(data.message || 'Failed to send verification code')
+        }
+      } catch (err) {
+        setErrors({ email: err.message || 'Failed to send verification code' })
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault()
     if (formData.verificationCode.length === 6) {
-      // Handle registration logic here
-      console.log('Registration data:', formData)
+      setIsLoading(true)
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/signup/verify`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            firstname: formData.firstName,
+            lastname: formData.lastName,
+            active: 'Y',
+            otp: formData.verificationCode,
+            credits: '',
+            subscriptions: [{ start_date: '', end_date: '' }]
+          })
+        })
+
+       
+
+        const sessionId = response.headers.get('X-Session-id')
+        console.log('Session ID:', sessionId)
+        if (sessionId) {
+          setSessionId(sessionId)
+        }
+        
+        const data = await response.json()
+
+        if (response.ok && data.status === 'success') {
+          // Store user data in Zustand
+          const userData = {
+            email: formData.email,
+            firstname: formData.firstName,
+            lastname: formData.lastName,
+            active: 'Y',
+            credits: data.user?.credits || '',
+            subscriptions: data.user?.subscriptions || []
+          }
+          setUser(userData)
+          
+          // Set local storage
+          localStorage.setItem('isLoggedIn', 'true')
+          localStorage.setItem('userEmail', formData.email)
+          
+          // Navigate to dashboard
+          router.push('/dashboard')
+        } else {
+          throw new Error(data.message || 'Invalid verification code')
+        }
+      } catch (err) {
+        setErrors({ 
+          verificationCode: err.message || 'Verification failed' 
+        })
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -198,10 +287,17 @@ const SignUp = () => {
               <button
                 type="button"
                 onClick={handleRegister}
-                disabled={formData.verificationCode.length !== 6}
+                disabled={formData.verificationCode.length !== 6 || isLoading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Register
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="w-5 h-5 border-t-2 border-white rounded-full animate-spin mr-2" />
+                    <span>Verifying...</span>
+                  </div>
+                ) : (
+                  'Register'
+                )}
               </button>
             </div>
           )}
@@ -210,9 +306,17 @@ const SignUp = () => {
             <button
               type="button"
               onClick={handleSubmit}
-              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={isLoading}
+              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              Submit
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 border-t-2 border-white rounded-full animate-spin mr-2" />
+                  <span>Submitting...</span>
+                </div>
+              ) : (
+                'Submit'
+              )}
             </button>
           )}
         </div>
