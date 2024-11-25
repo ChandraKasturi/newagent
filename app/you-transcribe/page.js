@@ -1,8 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { fetchWithSession } from '../utils/api'
-import useTokenStore from '../store/tokenStore'
+
+
 
 
 
@@ -48,7 +48,7 @@ const YouTranscribe = () => {
     setIsLoading(true)
     setError('')
     try {
-      const response = await fetchWithSession(`${process.env.NEXT_PUBLIC_SERVER_URL}/you-transcribe`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/you-transcribe`, {
         method: 'POST',
         //headers to include the session id  as x-session-id 
         

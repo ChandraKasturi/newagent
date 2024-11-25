@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import useUserStore from '../store/userStore'
-import useTokenStore from '../store/tokenStore'
+
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -11,7 +11,7 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const router = useRouter()
   const clearUser = useUserStore((state) => state.clearUser)
-  const clearSessionId = useTokenStore((state) => state.clearSessionId)
+  
   const dropdownRef = useRef(null)
   const buttonRef = useRef(null)
 
