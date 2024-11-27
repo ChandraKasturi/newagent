@@ -53,6 +53,7 @@ const Navbar = () => {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'x-session-id': localStorage.getItem('sessionId')
         }
       })
 
@@ -61,9 +62,11 @@ const Navbar = () => {
         localStorage.removeItem('isLoggedIn')
         localStorage.removeItem('userEmail')
         localStorage.removeItem('sessionId')
+        localStorage.removeItem('userDetails')
+        localStorage.removeItem('transcriptionHistory')
+        localStorage.removeItem('transcribedVideo')
         // Clear Zustand stores
-        clearUser()
-        clearSessionId()
+       
         
         // Update local state
         setIsLoggedIn(false)

@@ -1,10 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-
-
-
+import TaskProgress from '../components/TaskProgress'
+import YouModal from '../components/YouModal'
 
 const YouTranscribe = () => {
   const router = useRouter()
@@ -14,8 +12,9 @@ const YouTranscribe = () => {
   const [transcript, setTranscript] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-
-
+  const [userPrompt, setUserPrompt] = useState('')
+  const [showProgress, setShowProgress] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const extractVideoId = (url) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
@@ -34,6 +33,10 @@ const YouTranscribe = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     const extractedVideoId = extractVideoId(url)
+    
+    // Show the modal
+    setIsModalOpen(true)
+
     if (extractedVideoId) {
       setVideoId(extractedVideoId)
       setShowPreview(true)
@@ -47,32 +50,42 @@ const YouTranscribe = () => {
   const handleTranscribe = async () => {
     setIsLoading(true)
     setError('')
+    setShowProgress(true)
+    
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/you-transcribe`, {
         method: 'POST',
-        //headers to include the session id  as x-session-id 
-        
         headers: {
           'Content-Type': 'application/json',
           'x-session-id': localStorage.getItem('sessionId')
         },
         body: JSON.stringify({
-          videourl: url // Send the full video URL
+          videourl: url,
+          userprompt: userPrompt
         })
       })
 
       const data = await response.json()
-      console.log('Server Response:', data) // Log the server response
+      console.log('Server Response:', data)
 
       if (response.ok && data.status === 'success') {
-        setTranscript(data.text || '') // Assuming the response has a 'text' field with the transcript
+        // Store the response data
+        localStorage.setItem('transcribedVideo', JSON.stringify(data))
+        
+        // Complete the progress and redirect
+        setTimeout(() => {
+          setShowProgress(false)
+          setIsLoading(false)
+          router.push('/ytdetails')
+        }, 1000)
       } else {
+        setShowProgress(false)
         throw new Error(data.message || 'Failed to get transcript')
       }
     } catch (err) {
+      setShowProgress(false)
       setError(err.message || 'Failed to get transcript')
       console.error('Transcription error:', err)
-    } finally {
       setIsLoading(false)
     }
   }
@@ -111,6 +124,15 @@ const YouTranscribe = () => {
             </div>
           </form>
 
+          {/* YouModal Component */}
+          <YouModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            message="Currently we support only English language videos that have captions. We plan to support more languages and transcribe without captions."
+        
+            autoCloseDuration={4000}
+          />
+
           {/* Video Preview Section */}
           {showPreview && (
             <div className="mt-8 space-y-6">
@@ -123,6 +145,14 @@ const YouTranscribe = () => {
                   className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
                 />
               </div>
+
+              {/* Add a text area below video where user can input his own prompt and send the entered text as userprompt along with video url in the api request */}
+              <textarea
+                value={userPrompt}
+                onChange={(e) => setUserPrompt(e.target.value)}
+                placeholder="Enter your prompt here..."
+                className="w-full h-24 p-2 border border-gray-300 rounded-md"
+              />
               
               <div className="flex justify-center">
                 <button
@@ -137,11 +167,25 @@ const YouTranscribe = () => {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Transcribing...
+                      Processing...
                     </>
                   ) : 'Transcribe Video'}
                 </button>
               </div>
+
+              {/* Progress Tracker Overlay */}
+              {showProgress && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                  <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
+                    <TaskProgress 
+                      onComplete={() => {
+                        setShowProgress(false)
+                       
+                      }} 
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Error Message */}
               {error && (
@@ -150,15 +194,8 @@ const YouTranscribe = () => {
                 </div>
               )}
               
-              {/* Transcript Display */}
-              {transcript && (
-                <div className="p-4 rounded-md border border-gray-200 bg-gray-50">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Transcript</h3>
-                  <div className="prose prose-sm max-w-none">
-                    <p className="text-gray-700 whitespace-pre-wrap">{transcript}</p>
-                  </div>
-                </div>
-              )}
+              {/* Transcript Display */} 
+           
             </div>
           )}
         </div>
