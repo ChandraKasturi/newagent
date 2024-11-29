@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 const TaskProgress = ({ onComplete }) => {
   const [tasks, setTasks] = useState([
-    { id: 1, label: "Initiating the process...", completedLabel: "Priocess is Initiated", isCompleted: false },
+    { id: 1, label: "Initiating the process...", completedLabel: "Process is Initiated", isCompleted: false },
     { id: 2, label: "Checking the video..", completedLabel: "Video check completed", isCompleted: false },
     { id: 3, label: "Transcribing the video...", completedLabel: "Transcribe completed", isCompleted: false, isLast: true },
   ]);
@@ -18,7 +18,7 @@ const TaskProgress = ({ onComplete }) => {
         );
         if (task.isLast && onComplete) {
           // Trigger onComplete callback for last task after 9 seconds
-          setTimeout(onComplete, 3000);
+          setTimeout(onComplete, 2000);
         }
       }, (index + 1) * 3000);
     });

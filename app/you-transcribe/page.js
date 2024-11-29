@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import TaskProgress from '../components/TaskProgress'
 import YouModal from '../components/YouModal'
@@ -9,19 +9,21 @@ const YouTranscribe = () => {
   const [url, setUrl] = useState('')
   const [videoId, setVideoId] = useState('')
   const [showPreview, setShowPreview] = useState(false)
-  const [transcript, setTranscript] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [userPrompt, setUserPrompt] = useState('')
   const [showProgress, setShowProgress] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [videoDuration, setVideoDuration] = useState(0)
+  const promptTextareaRef = useRef(null)
 
   const extractVideoId = (url) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+    //the video url can be youtube.com or youtu.be 
+    const regExp = /^.*(youtube\.com\/|youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
     const match = url.match(regExp)
     return match && match[2].length === 11 ? match[2] : null
   }
-
+  
   // Check if user is logged in
   React.useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn')
@@ -30,22 +32,104 @@ const YouTranscribe = () => {
     }
   }, [router])
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const extractedVideoId = extractVideoId(url)
-    
-    // Show the modal
-    setIsModalOpen(true)
+  const getVideoDuration = async (videoId) => {
+    return new Promise((resolve, reject) => {
+      // Check if API is already loaded
+      if (window.YT) {
+        createPlayer(videoId, resolve, reject);
+        return;
+      }
 
-    if (extractedVideoId) {
-      setVideoId(extractedVideoId)
-      setShowPreview(true)
-      setTranscript('')
-      setError('')
-    } else {
-      setError('Please enter a valid YouTube URL')
+      // If not loaded, create script tag and load API
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // Setup global callback for when API is ready
+      window.onYouTubeIframeAPIReady = () => {
+        createPlayer(videoId, resolve, reject);
+      };
+    });
+  };
+
+  // Helper function to create player
+  const createPlayer = (videoId, resolve, reject) => {
+    try {
+      // Create a temporary container for the player
+      const tempContainer = document.createElement('div');
+      tempContainer.id = 'dummy-player';
+      tempContainer.style.display = 'none';
+      document.body.appendChild(tempContainer);
+
+      new window.YT.Player('dummy-player', {
+        videoId: videoId,
+        events: {
+          onReady: (event) => {
+            const duration = event.target.getDuration();
+            event.target.destroy();
+            document.body.removeChild(tempContainer);
+            resolve(duration);
+          },
+          onError: (event) => {
+            event.target.destroy();
+            document.body.removeChild(tempContainer);
+            reject(new Error('Failed to load video'));
+          }
+        }
+      });
+    } catch (error) {
+      reject(error);
     }
-  }
+  };
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
+ //if the credits are equal to 0, then show the error message
+ if (JSON.parse(localStorage.getItem('userDetails')).credits === 0 ) {
+  console.log(JSON.parse(localStorage.getItem('userDetails')).credits)
+  setError('You have no credits left. Please purchase more credits.')
+      return
+    }
+
+    const extractedVideoId = extractVideoId(url);
+    
+    if (extractedVideoId) {
+      setIsLoading(true);
+      setError('');
+      
+      try {
+        const duration = await getVideoDuration(extractedVideoId);
+        setVideoDuration(duration);
+        
+        if (duration > 3600) {
+          setError('Video duration exceeds 60 minutes limit. Please choose a shorter video.');
+          setShowPreview(false);
+        } else {
+          setVideoId(extractedVideoId);
+          setShowPreview(true);
+          setError('');
+          setIsModalOpen(true);
+          
+          // Set focus to prompt textarea after a short delay
+          // to ensure the element is rendered
+          setTimeout(() => {
+            promptTextareaRef.current?.focus()
+          }, 5000)
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        setError('Failed to get video duration. Please check the URL and try again.');
+        setShowPreview(false);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setError('Please enter a valid YouTube URL');
+    }
+  };
 
   const handleTranscribe = async () => {
     setIsLoading(true)
@@ -116,13 +200,28 @@ const YouTranscribe = () => {
                 />
                 <button
                   type="submit"
-                  className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 whitespace-nowrap"
+                  disabled={isLoading}
+                  className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 whitespace-nowrap disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  Submit
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Checking...
+                    </>
+                  ) : 'Submit'}
                 </button>
               </div>
             </div>
           </form>
+
+          {error && (
+                <div className="mt-4 p-4 rounded-md bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
 
           {/* YouModal Component */}
           <YouModal
@@ -132,10 +231,12 @@ const YouTranscribe = () => {
         
             autoCloseDuration={4000}
           />
-
           {/* Video Preview Section */}
           {showPreview && (
             <div className="mt-8 space-y-6">
+              {/* Display duration info */}
+             
+              
               <div className="relative w-full pt-[56.25%]">
                 <iframe
                   src={`https://www.youtube.com/embed/${videoId}`}
@@ -146,8 +247,8 @@ const YouTranscribe = () => {
                 />
               </div>
 
-              {/* Add a text area below video where user can input his own prompt and send the entered text as userprompt along with video url in the api request */}
               <textarea
+                ref={promptTextareaRef}
                 value={userPrompt}
                 onChange={(e) => setUserPrompt(e.target.value)}
                 placeholder="Enter your prompt here..."
@@ -158,18 +259,10 @@ const YouTranscribe = () => {
                 <button
                   type="button"
                   onClick={handleTranscribe}
-                  disabled={isLoading}
+                  disabled={isLoading || videoDuration > 3600}
                   className="inline-flex items-center rounded-md bg-green-600 px-6 py-3 text-base font-medium text-white hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
-                    </>
-                  ) : 'Transcribe Video'}
+                  {isLoading ? 'Processing...' : 'Transcribe Video'}
                 </button>
               </div>
 
@@ -189,7 +282,7 @@ const YouTranscribe = () => {
 
               {/* Error Message */}
               {error && (
-                <div className="p-4 rounded-md bg-red-50 border border-red-200">
+                <div className="mt-4 p-4 rounded-md bg-red-50 border border-red-200">
                   <p className="text-sm text-red-600">{error}</p>
                 </div>
               )}

@@ -8,7 +8,7 @@ const agents = [
     description: 'Transform any video into actionable insights! Upload a video URL to get a full English transcription, concise summaries, key points, tweet drafts, articles with images, or even custom outputs based on your own prompts.',
     cta: 'Start turning videos into value!',
     imagePath: '/images/transcript-maestro.png',
-    route: '/agents/transcript-maestro',
+    route: '/you-transcribe',
     buttonClass: 'bg-sky-600 hover:bg-sky-700'
   },
   {
