@@ -67,7 +67,7 @@ const Services = () => {
           >
             <div className="relative h-64">
               <Image
-                src="/images/consulting.png"
+                src="/images/consulting1.png"
                 alt="AI Consulting"
                 fill
                 className="object-cover"
@@ -97,9 +97,9 @@ const Services = () => {
                     transition={{ delay: index * 0.2 }}
                     viewport={{ once: true }}
                   >
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                    <svg className="w-3 h-3 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="6" />
+  </svg>
                     {item}
                   </motion.li>
                 ))}
@@ -109,7 +109,7 @@ const Services = () => {
               60-Minute Free Call
               </h4>
              <div className="mb-6 relative z-10 text-black bg-white p-4 rounded-lg">
-              This is your chance to pick my brain, explore possibilities, and understand how AI can add value to your business - no strings attached!
+              This is your chance to pick my brain, explore possibilities, and understand how AI can add value to your business!
               </div>
               <div className="text-center">
               <a
@@ -161,9 +161,9 @@ const Services = () => {
                     transition={{ delay: index * 0.2 }}
                     viewport={{ once: true }}
                   >
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                    <svg className="w-3 h-3 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="6" />
+  </svg>
                     {item}
                   </motion.li>
                 ))}
