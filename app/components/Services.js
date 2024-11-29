@@ -108,7 +108,7 @@ const Services = () => {
                
               60-Minute Free Call
               </h4>
-              <div className="mb-6">
+             <div className="mb-6 relative z-10 text-black bg-white p-4 rounded-lg">
               This is your chance to pick my brain, explore possibilities, and understand how AI can add value to your business - no strings attached!
               </div>
               <div className="text-center">
@@ -172,7 +172,7 @@ const Services = () => {
                
               60-Minute Free Call
               </h4>
-              <div className="mb-6">
+              <div className="mb-6 relative z-10 text-black bg-white p-4 rounded-lg">
               Let's collaborate in a call to dive into your project ideas, explore possibilities, and outline a clear path to turning your vision into reality!
               </div>
               <div className="text-center">
