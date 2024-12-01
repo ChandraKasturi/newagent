@@ -49,7 +49,7 @@ const SignUp = () => {
       setErrors({ email: 'We do not support disposable email services' })
       return
     }
-    if (validateForm()) {
+    if (validateForm() && !errors.email) {
       setIsLoading(true)
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/signup`, {
@@ -64,7 +64,7 @@ const SignUp = () => {
             lastname: formData.lastName,
             active: 'Y',
             otp: '',
-            credits: '10'
+            credits: ''
           })
         })
 

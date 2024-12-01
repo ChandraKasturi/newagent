@@ -37,22 +37,29 @@ const HeroSection = () => {
   const slides = [
     {
       title: "AI-Powered Transcription Service",
-      description: "Convert any YouTube video into accurate, readable text with our advanced AI transcription technology.",
-      image: "/notebook.jpg",
-      ctaText: "Try YouTranscribe",
+      description: "Transform any video into actionable insights! Upload a video URL to get a full English transcription, concise summaries, key points, tweet drafts, articles with images, or even custom outputs based on your own prompts.",
+      image: "/images/transcript-maestro.png",
+      ctaText: "Try You Transcribe",
     },
     {
-      title: "AI-Powered Transcription Service",
-      description: "Convert any YouTube video into accurate, readable text with our advanced AI transcription technology.",
-      image: "/notebook.jpg",
-      ctaText: "Try YouTranscribe",
+      title: "AI-Powered Resume Builder",
+      description: "Your job deserves a perfectly tailored resume! Upload your job description, and let JobMatch Pro craft a resume that aligns with the JD, optimizes for ATS systems, and sets you apart from the crowd.",
+      image: "/images/jobmatch-pro.png",
+      ctaText: "Try JobMatch Pro",
     },
     {
-      title: "Resume Building Made Simple",
-      description: "Create professional resumes instantly with our AI-powered resume builder. Stand out from the crowd.",
-      image: "/resume.jpg",
-      ctaText: "Build Resume",
+      title: "Personalized Mind Maps",
+      description: "Declutter your mind! Whether it's a grocery list, links, articles, tweets, or videos, drop them into MindMap Genie. Ask for summaries, insights, or retrievals anytime—your personal brain assistant is ready.",
+      image: "/images/mindmap-genie.png",
+      ctaText: "Try MindMap Genie",
+    },
+    {
+      title: "Date Assistant",
+      description: "Decode the person you're dating! Persona Builder gathers public information to create a profile of your partner, helping you understand them better and build stronger connections.",
+      image: "/images/persona-builder.png",
+      ctaText: "Try Date Assistant",
     }
+
   ]
 
   const slideVariants = {

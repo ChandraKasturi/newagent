@@ -51,3 +51,13 @@ AIzaSyDf0mqVvRyMewzeTp2vP_ImYpQ90vx3QP8
       setError('You have no credits left. Please purchase more credits.')
       return
     }
+
+     <div className="text-sm text-gray-600 text-center">
+                Video duration: {Math.floor(videoDuration / 60)}:{Math.floor(videoDuration % 60).toString().padStart(2, '0')} minutes
+              </div>
+
+    git add -all
+    git commit -m "message"
+    git push --set-upstream origin master - NextJs
+
+git push -u origin main - Python
