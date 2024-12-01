@@ -57,6 +57,11 @@ const Navbar = () => {
     setIsAgentsOpen(!isAgentsOpen)
   }
 
+  const handleMobileClick = () => {
+    setIsMobileMenuOpen(false)
+    setIsAgentsOpen(false)
+  }
+
   const handleLogout = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/logout`, {
@@ -172,9 +177,14 @@ const Navbar = () => {
                   {isAgentsOpen && (
                     <div ref={dropdownRef}
                          className="absolute left-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                      <Link href="/you-transcribe" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                        You Transcribe
-                      </Link>
+                      <div className="relative group">
+                        <Link href="/you-transcribe" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                          You Transcribe
+                        </Link>
+                        <Link href="/ythistory" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 pl-8">
+                          Transcribe History
+                        </Link>
+                      </div>
                       <Link href="/jobmaster-pro" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                         Jobmaster Pro
                       </Link>
@@ -262,16 +272,31 @@ const Navbar = () => {
                 </button>
                 {isAgentsOpen && (
                   <div className="pl-4">
-                    <Link href="/you-transcribe" className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
-                      You Transcribe
-                    </Link>
-                    <Link href="/jobmaster-pro" className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                    <div className="relative group">
+                      <Link href="/you-transcribe" 
+                            onClick={handleMobileClick}
+                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                        You Transcribe
+                      </Link>
+                      <Link href="/ythistory"
+                            onClick={handleMobileClick}
+                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 pl-6">
+                        Transcribe History
+                      </Link>
+                    </div>
+                    <Link href="/jobmaster-pro"
+                          onClick={handleMobileClick}
+                          className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                       Jobmaster Pro
                     </Link>
-                    <Link href="/mindmap-genie" className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                    <Link href="/mindmap-genie"
+                          onClick={handleMobileClick}
+                          className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                       Mindmap Genie
                     </Link>
-                    <Link href="/date-assist" className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
+                    <Link href="/date-assist"
+                          onClick={handleMobileClick}
+                          className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                       Date Assist
                     </Link>
                   </div>
@@ -303,30 +328,39 @@ const Navbar = () => {
             ) : (
               <div className="flex flex-col space-y-4">
                 <button
-                  onClick={() => scrollToSection('pricing')}
+                  onClick={() => {
+                    scrollToSection('pricing')
+                    handleMobileClick()
+                  }}
                   className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 >
                   Pricing
                 </button>
                 <button
-                  onClick={() => scrollToSection('services')}
+                  onClick={() => {
+                    scrollToSection('services')
+                    handleMobileClick()
+                  }}
                   className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 >
                   Services
                 </button>
                 <button
-                  onClick={() => scrollToSection('about')}
+                  onClick={() => {
+                    scrollToSection('about')
+                    handleMobileClick()
+                  }}
                   className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 >
                   About
                 </button>
                 <Link href="/sign-in"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={handleMobileClick}
                       className="block rounded-md bg-white border border-gray-300 px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-50 text-center">
                   Sign in
                 </Link>
                 <Link href="/sign-up"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={handleMobileClick}
                       className="block rounded-md bg-indigo-600 px-3 py-2 text-base font-medium text-white hover:bg-indigo-500 text-center">
                   Sign up
                 </Link>

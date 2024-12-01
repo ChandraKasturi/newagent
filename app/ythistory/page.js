@@ -27,7 +27,7 @@ React.useEffect(() => {
       const userEmail = localStorage.getItem('userEmail')
       if (!userEmail) return
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ytranscribe/history`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/ytranscribe/history`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ React.useEffect(() => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ytranscribe/history/delete`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/ytranscribe/history/delete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,23 +130,25 @@ React.useEffect(() => {
                   />
                 </div>
 
-                {/* Content */}
-                <div className="p-4 pt-6 relative">
+                {/* Content section - updated to ensure date and delete are always at bottom */}
+                <div className="p-4 pt-6 flex flex-col h-[120px]"> {/* Set fixed height and use flex */}
                   <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">
                     {item.video_title}
                   </h3>
-                  <p className="text-sm text-gray-500">
-                    {new Date(item.created_at).toLocaleDateString()}
-                  </p>
-                  <button
-                    onClick={() => handleDelete(item._id)}
-                    className="absolute bottom-2 right-2 p-2 rounded-full bg-white shadow-md 
-                               text-red-500 hover:text-red-600 hover:bg-red-50 
-                               transition-all duration-200 z-10"
-                    aria-label="Delete transcription"
-                  >
-                    <Trash2 className="h-6 w-6" />
-                  </button>
+                  <div className="mt-auto flex justify-between items-center"> {/* Push to bottom with mt-auto */}
+                    <p className="text-sm text-gray-500">
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </p>
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="p-2 rounded-full bg-white shadow-md 
+                                 text-red-500 hover:text-red-600 hover:bg-red-50 
+                                 transition-all duration-200 z-10"
+                      aria-label="Delete transcription"
+                    >
+                      <Trash2 className="h-6 w-6" />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             ))}
