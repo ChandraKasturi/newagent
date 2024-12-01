@@ -27,7 +27,7 @@ React.useEffect(() => {
       const userEmail = localStorage.getItem('userEmail')
       if (!userEmail) return
 
-      const response = await fetch('http://localhost:8000/ytranscribe/history', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ytranscribe/history`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ React.useEffect(() => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch('http://localhost:8000/ytranscribe/history/delete', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ytranscribe/history/delete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
