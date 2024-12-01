@@ -1,11 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [direction, setDirection] = useState(0)
-
+  const router = useRouter()
   // Navigation handlers
   const handleNext = () => {
     console.log('Next clicked')
@@ -93,8 +94,11 @@ const HeroSection = () => {
   }
 
   return (
-    <div className="relative overflow-hidden bg-white h-[calc(100vh-64px)] mt-16">
+    
+    <div className="relative overflow-hidden bg-white h-[calc(85vh-64px)] mt-16">
+    
       <div className="relative h-full">
+        
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={currentSlide}
@@ -140,6 +144,7 @@ const HeroSection = () => {
                     {slides[currentSlide].description}
                   </motion.p>
                   <motion.button 
+                    onClick={() => router.push('/sign-up')}
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.4 }}
@@ -183,27 +188,7 @@ const HeroSection = () => {
           ))}
         </div>
 
-        {/* Arrow Navigation */}
-        <button
-          type="button"
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg hover:bg-white z-20"
-          onClick={handlePrevious}
-          aria-label="Previous slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 rounded-full p-2 shadow-lg hover:bg-white z-20"
-          onClick={handleNext}
-          aria-label="Next slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+       
       </div>
     </div>
   )
