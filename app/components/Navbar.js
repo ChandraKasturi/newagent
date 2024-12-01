@@ -18,15 +18,24 @@ const Navbar = () => {
   const buttonRef = useRef(null)
 
   useEffect(() => {
-    const loginStatus = localStorage.getItem('isLoggedIn') === 'true'
-    setIsLoggedIn(loginStatus)
-    
-    if (loginStatus) {
-      const userDetailsStr = localStorage.getItem('userDetails')
-      if (userDetailsStr) {
-        const details = JSON.parse(userDetailsStr)
+    const updateLoginStatus = () => {
+      const loginStatus = localStorage.getItem('isLoggedIn') === 'true'
+      setIsLoggedIn(loginStatus)
+      
+      if (loginStatus) {
+        const details = JSON.parse(localStorage.getItem('userDetails'))
         setUserDetails(details)
       }
+    }
+
+    // Initial check
+    updateLoginStatus()
+
+    // Listen for the custom login event
+    window.addEventListener('login', updateLoginStatus)
+
+    return () => {
+      window.removeEventListener('login', updateLoginStatus)
     }
   }, [])
 
@@ -62,39 +71,15 @@ const Navbar = () => {
     setIsAgentsOpen(false)
   }
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/logout`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-session-id': localStorage.getItem('sessionId')
-        }
-      })
-
-      if (response.ok) {
-        // Clear local storage
-        localStorage.removeItem('isLoggedIn')
-        localStorage.removeItem('userEmail')
-        localStorage.removeItem('sessionId')
-        localStorage.removeItem('userDetails')
-        localStorage.removeItem('transcriptionHistory')
-        localStorage.removeItem('transcribedVideo')
-        // Clear Zustand stores
-       
-        
-        // Update local state
-        setIsLoggedIn(false)
-        
-        // Redirect to home page
-        router.push('/')
-      } else {
-        console.error('Logout failed')
-      }
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('userDetails')
+    localStorage.removeItem('sessionId')
+    localStorage.removeItem('userEmail')
+    localStorage.removeItem('transcriptionHistory')
+    setIsLoggedIn(false)
+    setUserDetails(null)
+    router.push('/')
   }
 
   const scrollToSection = (sectionId) => {
@@ -148,7 +133,10 @@ const Navbar = () => {
           {/* Logo section */}
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              <Link href="/" className="text-2xl font-bold text-indigo-600 hover:text-indigo-500 transition-colors">
+              <Link 
+                href={isLoggedIn ? "/dashboard" : "/"} 
+                className="text-2xl font-bold text-indigo-600 hover:text-indigo-500 transition-colors"
+              >
                 AgentGenix
               </Link>
             </div>
@@ -178,10 +166,14 @@ const Navbar = () => {
                     <div ref={dropdownRef}
                          className="absolute left-0 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                       <div className="relative group">
-                        <Link href="/you-transcribe" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        <Link href="/you-transcribe" 
+                              onClick={handleMobileClick}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                           You Transcribe
                         </Link>
-                        <Link href="/ythistory" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 pl-8">
+                        <Link href="/ythistory" 
+                              onClick={handleMobileClick}
+                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 pl-8">
                           Transcribe History
                         </Link>
                       </div>
@@ -235,12 +227,14 @@ const Navbar = () => {
                   onClick={() => scrollToSection('services')}
                   className="text-gray-600 hover:text-gray-900 font-medium"
                 >
+                  
                   Services
                 </button>
                 <button
                   onClick={() => scrollToSection('about')}
                   className="text-gray-600 hover:text-gray-900 font-medium"
                 >
+                  
                   About
                 </button>
                 <Link href="/sign-in"
@@ -319,7 +313,7 @@ const Navbar = () => {
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="w-full rounded-md bg-blue-200 px-3 py-2 text-base font-medium text-gray-900 hover:bg-blue-900 text-center"
+                    className="w-full rounded-md bg-blue-200 px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-200 text-center"
                   >
                     Logout
                   </button>
@@ -344,15 +338,6 @@ const Navbar = () => {
                   className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 >
                   Services
-                </button>
-                <button
-                  onClick={() => {
-                    scrollToSection('about')
-                    handleMobileClick()
-                  }}
-                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                >
-                  About
                 </button>
                 <Link href="/sign-in"
                       onClick={handleMobileClick}

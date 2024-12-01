@@ -126,6 +126,8 @@ const SignIn = () => {
             localStorage.setItem('sessionId', sessionId)
           }
           
+          // After successful login and setting localStorage
+window.dispatchEvent(new Event('login'))
           // Navigate to dashboard
           router.push('/dashboard')
         } else {
