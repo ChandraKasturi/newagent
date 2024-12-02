@@ -118,7 +118,7 @@ const Pricing = () => {
         "All agents",
         "Monthly Credit Reset",
         "Email support",
-        "Advanced features and custom prompts"
+        "Advanced features"
       ],
       isPopular: true
     },
@@ -130,7 +130,7 @@ const Pricing = () => {
         "All agents",
         "Monthly Credit Reset",
         "Email support",
-        "Exclusive priority queue for agents"
+        "Priority Queue for agents"
       ]
     }
   ]
@@ -138,19 +138,19 @@ const Pricing = () => {
   const agentPricing = [
     {
       name: "Transcribe Agent",
-      credits: "1 credit per Video / Audio: Includes transcription, summary, key points, tweet, and article generation. Additional 2 credits for user-provided custom prompts."
+      credits: "1 Credit per Video / Audio: Includes transcription, summary, key points, tweet, and article generation. Additional 2 credits for user-provided custom prompts."
     },
     {
-      name: "Resume Ace",
-      credits: "5 credits per resume customization: Tailors resumes for a given job description and optimizes for ATS systems."
+      name: "JobMatch Pro",
+      credits: "5 Credits for initial resume creation: 1 Credit for each custom resume created for a given job description and optimizes for ATS systems."
     },
     {
       name: "MindMap Genie",
-      credits: "2 credit per retrieval task: Summarize, extract, or organize scratchpad data."
+      credits: "1 Credit per retrieval task: Summarize, extract, or organize scratchpad data. 1 Credit for each 50 inputs like links, tweets, articles, etc. to MindMap Genie." 
     },
     {
       name: "Persona Builder",
-      credits: "10 credits per persona generation: Gathers public data and builds a detailed persona profile. 2 credits for follow-up insights."
+      credits: "10 Credits per persona generation: Gathers public data and builds a detailed persona profile. 1 Credit for follow-up insights."
     }
   ]
 
