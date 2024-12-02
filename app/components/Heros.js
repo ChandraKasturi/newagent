@@ -57,10 +57,10 @@ const HeroSection = () => {
       ctaText: "Coming on December 17th!",
     },
     {
-      title: "Date Assistant",
+      title: "Persona Builder",
       description: "Decode the person you're dating! Persona Builder gathers public information to create a profile of your partner, helping you understand them better and build stronger connections.",
       image: "/images/persona-builder.png",
-      //ctaText: "Try Date Assistant",
+      //ctaText: "Try Persona Builder",
       ctaText: "Coming on January 15th!",
     }
 

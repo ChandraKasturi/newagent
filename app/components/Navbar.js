@@ -224,13 +224,13 @@ const Navbar = () => {
                 >
                   Pricing
                 </button>
-                <button
+                {/* <button
                   onClick={() => scrollToSection('services')}
                   className="text-gray-600 hover:text-gray-900 font-medium"
                 >
                   
                   Services
-                </button>
+                </button> */}
                 <button
                   onClick={() => scrollToSection('about')}
                   className="text-gray-600 hover:text-gray-900 font-medium"

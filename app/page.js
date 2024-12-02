@@ -15,9 +15,9 @@ const page = () => {
 <div id="pricing">
   <Pricing />
 </div>
-<div id="services">
+{/* <div id="services">
   <Services />
-</div>
+</div>  */}
 <div id="about">
   <About />
 </div>
