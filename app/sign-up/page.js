@@ -137,7 +137,7 @@ const SignUp = () => {
             localStorage.setItem('sessionId', sessionId)
           }
           
-          // Navigate to dashboard
+          window.dispatchEvent(new Event('login'))      // Navigate to dashboard
           router.push('/dashboard')
         } else {
           throw new Error(data.message || 'Invalid verification code')

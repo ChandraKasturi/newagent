@@ -62,7 +62,7 @@ React.useEffect(() => {
           'Content-Type': 'application/json',
           'x-session-id': localStorage.getItem('sessionId')
         },
-        body: JSON.stringify({ deleteId: id })
+        body: JSON.stringify({ deleteid: id })
       })
 
       if (response.ok) {
@@ -74,6 +74,21 @@ React.useEffect(() => {
     } catch (error) {
       console.error('Error deleting transcription:', error)
     }
+  }
+
+  const handleCardClick = (item) => {
+    // Store the selected transcription in localStorage
+    localStorage.setItem('transcribedVideo', JSON.stringify({
+      transcribedtext: item.transcribedtext,
+      summary: item.summary,
+      tweet: item.tweet,
+      userprompt: item.userprompt, // This will be undefined if it doesn't exist
+      video_details: {
+        title: item.video_title,
+        url: item.url
+      }
+    }))
+    router.push('/ytdetails')
   }
 
   // Update the getVideoId function to handle more URL formats
@@ -133,11 +148,17 @@ React.useEffect(() => {
                 {/* Content section - updated to ensure date and delete are always at bottom */}
                 <div className="p-4 pt-6 flex flex-col h-[120px]"> {/* Set fixed height and use flex */}
                   <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 mb-2">
+                  <button 
+                onClick={() => handleCardClick(item)} 
+                className="underline"
+                    >
                     {item.video_title}
+    </button>
                   </h3>
                   <div className="mt-auto flex justify-between items-center"> {/* Push to bottom with mt-auto */}
                     <p className="text-sm text-gray-500">
-                      {new Date(item.created_at).toLocaleDateString()}
+                        
+                      {new Date(item.created_at).toLocaleDateString()} 
                     </p>
                     <button
                       onClick={() => handleDelete(item._id)}
@@ -156,9 +177,21 @@ React.useEffect(() => {
         </div>
 
         {transcriptions.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No transcriptions found</p>
-          </div>
+          <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Start Your Transcription Journey!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Transform your videos into text with just a few clicks.
+          </p>
+        <button onClick={() => router.push('/you-transcribe')} className="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition-colors duration-200">
+          Transcribe Now
+        </button>
+        </motion.div>
         )}
       </div>
     </div>

@@ -77,6 +77,7 @@ const Navbar = () => {
     localStorage.removeItem('sessionId')
     localStorage.removeItem('userEmail')
     localStorage.removeItem('transcriptionHistory')
+    localStorage.removeItem('transcribedVideo')
     setIsLoggedIn(false)
     setUserDetails(null)
     router.push('/')
@@ -177,7 +178,7 @@ const Navbar = () => {
                           Transcribe History
                         </Link>
                       </div>
-                      <Link href="/jobmaster-pro" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                      {/*  <Link href="/jobmaster-pro" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                         Jobmaster Pro
                       </Link>
                       <Link href="/mindmap-genie" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
@@ -185,7 +186,7 @@ const Navbar = () => {
                       </Link>
                       <Link href="/date-assist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                         Date Assist
-                      </Link>
+                      </Link> */}
                     </div>
                   )}
                 </div>

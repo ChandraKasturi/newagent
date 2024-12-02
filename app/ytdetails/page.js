@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 const YTDetails = () => {
   const router = useRouter()
   const [textAreaContent, setTextAreaContent] = useState('')
-  const [selectedBadge, setSelectedBadge] = useState('transcript')
+  const [selectedBadge, setSelectedBadge] = useState('transcribedtext')
   const [videoDetails, setVideoDetails] = useState({})
   const [transcribedData, setTranscribedData] = useState(null)
-  const [badges, setBadges] = useState(["transcript", "tweet", "summary"])
+  const [badges, setBadges] = useState(["transcribedtext", "tweet", "summary"])
   const [badgeConfig, setBadgeConfig] = useState({
-    transcript: { 
+    transcribedtext: { 
       label: 'Transcript', 
       bgColor: 'bg-blue-100',
       textColor: 'text-blue-800',
@@ -59,8 +59,9 @@ const YTDetails = () => {
       setVideoDetails(transcribedVideo.video_details || {})
       
       // Set initial content for transcript
-      if (transcribedVideo.transcript) {
-        setTextAreaContent(transcribedVideo.transcript)
+      if (transcribedVideo.transcribedtext) {
+        console.log("transcribedtext", transcribedVideo.transcribedtext)
+        setTextAreaContent(transcribedVideo.transcribedtext)
       }
     } catch (error) {
       console.error('Error loading transcribed data:', error)

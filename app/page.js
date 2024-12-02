@@ -3,6 +3,7 @@ import HeroSection from "./components/Heros";
 import Services from "./components/Services";
 import Pricing from '@/components/Pricing'
 import About from '@/components/About'
+import Footer from '@/components/Footer'
 
 
 const page = () => {
@@ -19,6 +20,9 @@ const page = () => {
 </div>
 <div id="about">
   <About />
+</div>
+<div id="footer">
+<Footer />
 </div>
     </div>
     
