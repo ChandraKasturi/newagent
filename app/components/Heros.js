@@ -47,21 +47,21 @@ const HeroSection = () => {
       description: "Your job deserves a perfectly tailored resume! Upload your job description, and let JobMatch Pro craft a resume that aligns with the JD, optimizes for ATS systems, and sets you apart from the crowd.",
       image: "/images/jobmatch-pro.png",
      //  ctaText: "Try JobMatch Pro",
-     ctaText: "Coming on December 10th!",
+     ctaText: "Coming on March 31st!",
     },
     {
       title: "Personalized Mind Maps",
       description: "Declutter your mind! Whether it's a grocery list, links, articles, tweets, or videos, drop them into MindMap Genie. Ask for summaries, insights, or retrievals anytime—your personal brain assistant is ready.",
       image: "/images/mindmap-genie.png",
       //ctaText: "Try MindMap Genie",
-      ctaText: "Coming on December 17th!",
+      ctaText: "Coming on April 15th!",
     },
     {
       title: "Persona Builder",
       description: "Decode the person you're dating! Persona Builder gathers public information to create a profile of your partner, helping you understand them better and build stronger connections.",
       image: "/images/persona-builder.png",
       //ctaText: "Try Persona Builder",
-      ctaText: "Coming on January 15th!",
+      ctaText: "Coming on May 1st!",
     }
 
   ]
