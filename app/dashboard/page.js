@@ -18,7 +18,7 @@ const agents = [
     name: 'JobMatch Pro',
     description: 'Your job deserves a perfectly tailored resume! Upload your job description, and let JobMatch Pro craft a resume that aligns with the JD, optimizes for ATS systems, and sets you apart from the crowd.',
    // cta: 'Craft your winning resume today!',
-   cta: 'Coming on December 10th!',
+   cta: 'Coming on March 31st!',
     imagePath: '/images/jobmatch-pro.png',
     route: '/agents/jobmatch-pro',
     buttonClass: 'bg-stone-600 hover:bg-stone-700'
@@ -27,7 +27,7 @@ const agents = [
     name: 'MindMap Genie',
     description: "Declutter your mind! Whether it's a grocery list, links, articles, tweets, or videos, drop them into MindMap Genie. Ask for summaries, insights, or retrievals anytime—your personal brain assistant is ready.",
    // cta: 'Get organized. Start exploring!',
-   cta: 'Coming on December 17th!',
+   cta: 'Coming on April 15!',
     imagePath: '/images/mindmap-genie.png',
     route: '/agents/mindmap-genie',
     buttonClass: 'bg-orange-600 hover:bg-orange-700'
@@ -36,7 +36,7 @@ const agents = [
     name: 'Persona Builder',
     description: "Decode the person you're dating! Persona Builder gathers public information to create a profile of your partner, helping you understand them better and build stronger connections.",
    // cta: 'Discover, connect, and grow!',
-   cta: 'Coming on January 15th!',
+   cta: 'Coming on May 1st!',
     imagePath: '/images/persona-builder.png',
     route: '/agents/persona-builder',
     buttonClass: 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
